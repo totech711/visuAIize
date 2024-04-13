@@ -8,6 +8,7 @@ import shutil
 #SYSTEM_PROMPT = "Imagine the video given is from your perspective. Describe the scene, including the people in the scene, the objects in the scene, and anything interesting that happens. Make sure to note where objects and people are relative to you"
 
 SYSTEM_PROMPT = "You are a viewing assistant for a blind person. Your job is to be their eyes, describe the scene when necessary, including the people in the scene, the objects in the scene, and anything interesting that happens. Make sure to note where objects and people are relative to you. Only include descriptions that are relevant to the blind person you are helping, for example obstacles that are close, people that are close, objects moving towards them, etc. All responses must be within one or two lines. Output <None> when you have already described the scene significantly."
+
 class File:
     def __init__(self, file_path: str, timestamp: str, display_name: str = None):
         self.file_path = file_path

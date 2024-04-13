@@ -12,13 +12,15 @@ from io import BytesIO
 import os
 import cv2
 from time import sleep
-from geminidriver import *
+from .geminidriver import *
 
 
 class VisuAIizeApp(toga.App):
     main_box = toga.Box()
     def startup(self):
-        self.ai = VideoGemini(verbose=True)
+        key1 = os.environ["API_KEY1"]
+        key2 = os.environ["API_KEY2"]
+        self.ai = VideoGemini(api_keys=[key1, key2], verbose=True)
         main_box = toga.Box()
         button = toga.Button(
             "START MY DAY",
