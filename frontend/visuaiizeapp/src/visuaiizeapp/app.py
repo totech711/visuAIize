@@ -67,7 +67,7 @@ class VisuAIizeApp(toga.App):
             frames_captured += 1
             if (frames_captured % 10 == 0):
                 query = None if frames_captured == 0 else "Did anything change significantly?"
-                task = asyncio.create_task(self.ai.async_get_response(query))
+                await self.ai.async_get_response(query)
             #sleep(0.5)
         # d = photo.data
         # im = img.open(BytesIO(d))

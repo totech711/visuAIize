@@ -79,20 +79,21 @@ class VideoGemini():
     
     async def async_get_response(self, query:str = None):
         if (self.calls_this_min >= 2):
-            api_key_idx += 1
-            api_key_idx = api_key_idx % len(self.api_keys)
+            self.api_key_idx += 1
+            self.api_key_idx = self.api_key_idx % len(self.api_keys)
             self.calls_this_min = 0
         self.calls_this_min += 1
             
         # Make the LLM request.
         request = self._build_request(query)
         response = self.chat.send_message(request)
-        print (response.text)
+        self.frames = []
+        print (response.text.replace("<None>", ""))
 
     def get_response(self, query:str = None):
         if (self.calls_this_min >= 2):
-            api_key_idx += 1
-            api_key_idx = api_key_idx % len(self.api_keys)
+            self.api_key_idx += 1
+            self.api_key_idx = self.api_key_idx % len(self.api_keys)
             self.calls_this_min = 0
         self.calls_this_min += 1
             
@@ -113,6 +114,5 @@ class VideoGemini():
                 print(f'Deleted {frame.file_path} at URI {frame.response.uri}')
         if (self.verbose):
             print(f"Completed deleting files!\n\nDeleted: {len(self.frames)} files")
-
     def __del__(self):
         self._delete_frames()
