@@ -11,6 +11,7 @@ from PIL import Image as img
 from io import BytesIO
 import os
 import cv2
+from time import sleep
 
 
 class VisuAIizeApp(toga.App):
@@ -53,6 +54,7 @@ class VisuAIizeApp(toga.App):
                 print("dumb")
                 break
             cv2.imwrite(dir_path+"/photos/newPhoto.png", frame)
+            sleep(0.5)
         # d = photo.data
         # im = img.open(BytesIO(d))
         # im.show()
