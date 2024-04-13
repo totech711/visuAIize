@@ -59,10 +59,14 @@ class VisuAIizeApp(toga.App):
             ret, frame = cap.read()
             if not ret:
                 break
+<<<<<<< Updated upstream
             cv2.imwrite(dir_path+"/photos/newPhoto.png", frame)
             file = File(dir_path+"/photos/newPhoto.png", (str(datetime.now()-self.starting).split(".")[0][2:]))
             self.ai.upload_frame(file)
             #sleep(0.5)
+=======
+            sleep(0.5)
+>>>>>>> Stashed changes
         # d = photo.data
         # im = img.open(BytesIO(d))
         # im.show()

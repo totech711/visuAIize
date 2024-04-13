@@ -4,6 +4,7 @@ import google.generativeai as genai
 import cv2
 import os
 import shutil
+import asyncio
 
 #SYSTEM_PROMPT = "Imagine the video given is from your perspective. Describe the scene, including the people in the scene, the objects in the scene, and anything interesting that happens. Make sure to note where objects and people are relative to you"
 
@@ -62,6 +63,11 @@ class VideoGemini():
             request.append(frame.timestamp)
             request.append(frame.response)
         return request
+    
+    async def get_response_async(self):
+        request = self._build_request()
+        resp = self.chat.send_message(request)
+        print(resp.text)
     
     def get_response(self, query:str = None):
         if (self.calls_this_min >= 2):
