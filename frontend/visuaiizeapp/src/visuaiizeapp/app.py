@@ -12,12 +12,13 @@ from io import BytesIO
 import os
 import cv2
 from time import sleep
+from geminidriver import *
 
 
 class VisuAIizeApp(toga.App):
     main_box = toga.Box()
     def startup(self):
-        
+        self.ai = VideoGemini(verbose=True)
         main_box = toga.Box()
         button = toga.Button(
             "START MY DAY",
@@ -43,15 +44,13 @@ class VisuAIizeApp(toga.App):
         self.main_window.show()
     async def save_picture(self, widget,**kwargs):
         self.camera.request_permission()
-        #photo = await self.camera.take_photo()
-        #photo_pil = photo.as_format(img.Image)
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        #photo_pil.save(dir_path+"/photos/photo.png", "PNG")
+
+
         cap = cv2.VideoCapture(0)
         while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
-                print("dumb")
                 break
             cv2.imwrite(dir_path+"/photos/newPhoto.png", frame)
             sleep(0.5)

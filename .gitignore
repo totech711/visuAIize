@@ -162,6 +162,3 @@ cython_debug/
 videotesting/capture/*
 videotesting/content/*
 videotesting/videos/*
-videotesting/capture/*
-videotesting/content/*
-videotesting/videos/*
