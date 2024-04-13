@@ -23,7 +23,7 @@ class VisuAIizeApp(toga.App):
     def startup(self):
         key1 = os.environ["API_KEY1"]
         key2 = os.environ["API_KEY2"]
-        self.ai = VideoGemini(api_keys=[key1, key2], verbose=True)
+        self.ai = VideoGemini(api_keys=[key1, key2], verbose=True, delete=False)
         main_box = toga.Box()
         button = toga.Button(
             "START MY DAY",
@@ -60,9 +60,9 @@ class VisuAIizeApp(toga.App):
             if not ret:
                 break
             cv2.imwrite(dir_path+"/photos/newPhoto.png", frame)
-            file = File(dir_path+"/photos/newPhoto.png", (self.starting - datetime.now()).strftime("%M:%S"))
-            asyncio.create_task(self.ai.async_upload_frame(file))
-            sleep(0.5)
+            file = File(dir_path+"/photos/newPhoto.png", (str(datetime.now()-self.starting).split(".")[0][2:]))
+            self.ai.upload_frame(file)
+            #sleep(0.5)
         # d = photo.data
         # im = img.open(BytesIO(d))
         # im.show()
