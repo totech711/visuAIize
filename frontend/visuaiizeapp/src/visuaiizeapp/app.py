@@ -16,6 +16,7 @@ from .geminidriver import *
 
 from datetime import datetime
 import asyncio
+from gtts import gTTS
 
 
 class VisuAIizeApp(toga.App):
@@ -67,7 +68,16 @@ class VisuAIizeApp(toga.App):
             frames_captured += 1
             if (frames_captured % 10 == 0):
                 query = None if frames_captured == 0 else "Did anything change significantly?"
-                await self.ai.async_get_response(query)
+                response = await self.ai.async_get_response(query)
+
+                tts = gTTS(text=response, lang='en', slow=False)
+   
+                # Save the audio file
+                tts.save(dir_path + "/photos/tts.mp3")
+
+                # Play the audio file
+                os.system("start output.mp3")
+                
             #sleep(0.5)
         # d = photo.data
         # im = img.open(BytesIO(d))

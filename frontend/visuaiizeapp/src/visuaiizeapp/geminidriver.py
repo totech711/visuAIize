@@ -88,7 +88,7 @@ class VideoGemini():
         request = self._build_request(query)
         response = self.chat.send_message(request)
         self.frames = []
-        print (response.text.replace("<None>", ""))
+        return (response.text.replace("<None>", ""))
 
     def get_response(self, query:str = None):
         if (self.calls_this_min >= 2):
