@@ -1,73 +1,57 @@
+from classes import *
 import os
-import google.generativeai as genai
+key = os.environ["API_KEY"]
+key2 = os.environ["API_KEY2"]
+#photo input simulation
+file_path = os.path.dirname(os.path.realpath(__file__))
+dir_path = file_path + "/content/vid0/"
+ai = VideoGemini(api_keys=[key, key2], verbose = True, delete = False)
+for filename in os.listdir(dir_path):
+    file_os = os.path.join(dir_path, filename)
+    timestamp = filename.split("_frame")[1].split(".")[0][:-3]
+    print(timestamp)
+    # checking if it is a file
+    if os.path.isfile(file_os):
+        file = File(file_os, timestamp)
+        ai.upload_frame(file)
 
-import cv2
-import os
-import shutil
+resp = ai.get_response()
+print(resp)
+dir_path = file_path + "/content/vid1/"
+for filename in os.listdir(dir_path):
+    file_os = os.path.join(dir_path, filename)
+    timestamp = filename.split("_frame")[1].split(".")[0][:-3]
+    print(timestamp)
+    # checking if it is a file
+    if os.path.isfile(file_os):
+        file = File(file_os, timestamp)
+        ai.upload_frame(file)
 
-SYSTEM_PROMPT = "Imagine the video given is from your perspective. Describe the scene, including the people in the scene, the objects in the scene, and anything interesting that happens. Make sure to note where objects and people are relative to you, in the last frame."
-class File:
-    def __init__(self, file_path: str, timestamp: str, display_name: str = None):
-        self.file_path = file_path
-        if display_name:
-            self.display_name = display_name
-        self.timestamp = timestamp
-    def set_response(self, response):
-       self.response = response
+resp = ai.get_response("Did anything significant change from the last scene? If so, give me the description.")
+print(resp)
 
+dir_path = file_path + "/content/vid2/"
+for filename in os.listdir(dir_path):
+    file_os = os.path.join(dir_path, filename)
+    timestamp = filename.split("_frame")[1].split(".")[0][:-3]
+    print(timestamp)
+    # checking if it is a file
+    if os.path.isfile(file_os):
+        file = File(file_os, timestamp)
+        ai.upload_frame(file)
 
-class VideoGemini():
-    def __init__(self, verbose: bool = False):
-        key = os.environ["API_KEY"]
-        genai.configure(api_key=key)
-    
-        self.file_path = os.path.dirname(os.path.realpath(__file__))
+resp = ai.get_response("Did anything significant change from the last scene? If so, give me the description.")
+print(resp)
 
-        self.video_path = f"{self.file_path}/videos/"
+dir_path = file_path + "/content/vid3/"
+for filename in os.listdir(dir_path):
+    file_os = os.path.join(dir_path, filename)
+    timestamp = filename.split("_frame")[1].split(".")[0][:-3]
+    print(timestamp)
+    # checking if it is a file
+    if os.path.isfile(file_os):
+        file = File(file_os, timestamp)
+        ai.upload_frame(file)
 
-        self.model_1_5 = genai.GenerativeModel(model_name="models/gemini-1.5-pro-latest")
-        self.model_vision = genai.GenerativeModel(model_name="models/gemini-1.0-pro-vision")
-
-        self.frames = []
-
-        self.verbose = verbose
-
-    def upload_frame(self, file: File):
-        if (self.verbose):
-            print(file.file_path)
-            print(f'Uploading: {file.file_path}...')
-        response = genai.upload_file(path=file.file_path)
-        file.set_response(response)
-        if (self.verbose):
-            print(f"Completed file upload")
-            print(f"Deleting local file at {file.file_path}")
-
-        os.remove(file.file_path)
-        file.file_path = ""
-        self.frames.append(file)
-
-    def _build_request(self):
-        request = [SYSTEM_PROMPT]
-        for frame in self.frames:
-            request.append(frame.timestamp)
-            request.append(frame.response)
-        return request
-    
-    def get_response(self):
-        # Make the LLM request.
-        request = self._build_request()
-        response = self.model.generate_content(request, request_options={"timeout": 600})
-        return response
-
-    def _delete_frames(self):
-        if (self.verbose):
-            print(f'Deleting {len(self.frames)} images. This might take a bit...')
-        for frame in self.frames:
-            genai.delete_file(frame.response.name)
-            if (self.verbose):
-                print(f'Deleted {frame.file_path} at URI {frame.response.uri}')
-        if (self.verbose):
-            print(f"Completed deleting files!\n\nDeleted: {len(self.frames)} files")
-
-    def __del__(self):
-        self._delete_frames()
+resp = ai.get_response("Did anything significant change from the last scene? If so, give me the description.")
+print(resp)
