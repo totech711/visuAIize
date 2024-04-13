@@ -38,7 +38,20 @@ class VideoGemini():
         self.chat = self.model.start_chat(history=[])
 
         
-        
+    async def async_upload_frame(self, file: File):
+        if (self.verbose):
+            print(file.file_path)
+            print(f'Uploading: {file.file_path}...')
+        response = genai.upload_file(path=file.file_path)
+        file.set_response(response)
+        if (self.verbose):
+            print(f"Completed file upload")
+            if (self.delete):
+                print(f"Deleting local file at {file.file_path}")
+        if (self.delete):
+            os.remove(file.file_path)
+            file.file_path = ""
+        self.frames.append(file)
 
     def upload_frame(self, file: File):
         if (self.verbose):
@@ -64,6 +77,18 @@ class VideoGemini():
             request.append(frame.response)
         return request
     
+    async def async_get_response(self, query:str = None):
+        if (self.calls_this_min >= 2):
+            api_key_idx += 1
+            api_key_idx = api_key_idx % len(self.api_keys)
+            self.calls_this_min = 0
+        self.calls_this_min += 1
+            
+        # Make the LLM request.
+        request = self._build_request(query)
+        response = self.chat.send_message(request)
+        return response
+
     def get_response(self, query:str = None):
         if (self.calls_this_min >= 2):
             api_key_idx += 1

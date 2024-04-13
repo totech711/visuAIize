@@ -14,6 +14,9 @@ import cv2
 from time import sleep
 from .geminidriver import *
 
+from datetime import datetime
+import asyncio
+
 
 class VisuAIizeApp(toga.App):
     main_box = toga.Box()
@@ -35,6 +38,8 @@ class VisuAIizeApp(toga.App):
             )
         )
 
+        self.starting = datetime.now()
+
         #my_image = toga.Image("filename.png")
         #view = toga.ImageView(my_image)
 
@@ -55,6 +60,8 @@ class VisuAIizeApp(toga.App):
             if not ret:
                 break
             cv2.imwrite(dir_path+"/photos/newPhoto.png", frame)
+            file = File(dir_path+"/photos/newPhoto.png", (self.starting - datetime.now()).strftime("%M:%S"))
+            asyncio.create_task(self.ai.async_upload_frame(file))
             sleep(0.5)
         # d = photo.data
         # im = img.open(BytesIO(d))
