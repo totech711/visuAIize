@@ -55,18 +55,20 @@ class VisuAIizeApp(toga.App):
 
 
         cap = cv2.VideoCapture(0)
+        frames_captured = 0
         while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
                 break
-<<<<<<< Updated upstream
+            sleep(0.5)
             cv2.imwrite(dir_path+"/photos/newPhoto.png", frame)
             file = File(dir_path+"/photos/newPhoto.png", (str(datetime.now()-self.starting).split(".")[0][2:]))
             self.ai.upload_frame(file)
+            frames_captured += 1
+            if (frames_captured % 10 == 0):
+                query = None if frames_captured == 0 else "Did anything change significantly?"
+                task = asyncio.create_task(self.ai.async_get_response(query))
             #sleep(0.5)
-=======
-            sleep(0.5)
->>>>>>> Stashed changes
         # d = photo.data
         # im = img.open(BytesIO(d))
         # im.show()

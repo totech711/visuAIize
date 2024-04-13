@@ -87,7 +87,7 @@ class VideoGemini():
         # Make the LLM request.
         request = self._build_request(query)
         response = self.chat.send_message(request)
-        return response
+        print (response.text)
 
     def get_response(self, query:str = None):
         if (self.calls_this_min >= 2):
