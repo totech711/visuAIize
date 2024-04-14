@@ -16,6 +16,7 @@ from .geminidriver import *
 from datetime import datetime
 import threading
 from gtts import gTTS
+import sys
 
 
 
@@ -29,22 +30,22 @@ class VisuAIizeApp(toga.App):
        key1 = os.environ["API_KEY1"]
        key2 = os.environ["API_KEY2"]
        self.ai = VideoGemini(api_keys=api_keys, verbose=True, delete=False)
-       main_box = toga.Box()
+       main_box = toga.Box(style=Pack(direction=COLUMN))
        my_image = toga.Image(dir_path+"/resources/logo.png")
        main_box.add(
          toga.ImageView(
-             my_image, style=Pack(direction=COLUMN),
+             my_image,style=Pack(alignment = 'center', height=100)
          )
        )
        button = toga.Button(
            "START MY DAY",
            on_press=self.save_picture,
-           style=Pack(padding=5, color=("#8a4cfc"), direction=COLUMN)
+           style=Pack(padding=5, background_color=("#8a4cfc"), alignment = 'center', height=200)
        )
        end_button = toga.Button(
            "END MY DAY",
            on_press=self.end_day,
-           style=Pack(padding=5, color=("#8a4cfc"), direction=COLUMN)
+           style=Pack(padding=5, background_color=("#8a4cfc"), direction=COLUMN, alignment = 'center', height=200)
        )
 
 
