@@ -31,6 +31,9 @@ universal_build = true
 requires = [
     "toga-cocoa~=0.4.0",
     "std-nslog~=1.0.0",
+    "opencv-python",
+    "google.generativeai",
+    "gtts"
 ]
 
 

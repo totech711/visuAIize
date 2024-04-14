@@ -4,10 +4,10 @@ import google.generativeai as genai
 import cv2
 import os
 import shutil
-
+from gtts import gTTS
 #SYSTEM_PROMPT = "Imagine the video given is from your perspective. Describe the scene, including the people in the scene, the objects in the scene, and anything interesting that happens. Make sure to note where objects and people are relative to you"
 
-SYSTEM_PROMPT = "You are a viewing assistant for a blind person. Your job is to be their eyes, Provide a concise description, prioritizing nearby people, obstacles within a few steps, moving objects approaching us, and relevant environmental changes. Keep descriptions to one-two phrases and only update when there are changes or upon request.  Output <None> when you have already described the scene significantly. Summarize only the frames provided in one to two phrases only. If anything is in reference to the camera, refer to the camera as 'you'"
+SYSTEM_PROMPT = "You are a viewing assistant for a blind person. Your job is to be their eyes, Provide a concise description, prioritizing nearby people, obstacles within a few steps, moving objects approaching us, and relevant environmental changes. Keep descriptions to one-two phrases and only update when there are changes or upon request.  Output <None> when you have already described the scene significantly. Summarize only the frames provided in 10 words maximum only. If anything is in reference to the camera, refer to the camera as 'you'"
 
 class File:
     def __init__(self, file_path: str, timestamp: str, display_name: str = None):
@@ -91,15 +91,16 @@ class VideoGemini():
         return (response.text.replace("<None>", ""))
 
     def get_response(self, query:str = None):
+        print(f"gemini call api key is: {self.api_key_idx}")
         if (self.calls_this_min >= 2):
             self.api_key_idx += 1
             self.api_key_idx = self.api_key_idx % len(self.api_keys)
             self.calls_this_min = 0
         self.calls_this_min += 1
+        dir_path = os.path.dirname(os.path.realpath(__file__))
             
         # Make the LLM request.
         request = self._build_request(query)
-        response = ""
         response = self.chat.send_message(request)
         return response
 

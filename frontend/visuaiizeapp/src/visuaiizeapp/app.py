@@ -7,26 +7,25 @@ from toga.style.pack import COLUMN, ROW
 from toga import Image, ImageView, Canvas
 # import pygame 
 # import pygame.camera 
-from PIL import Image as img
-from io import BytesIO
 import os
 import cv2
 from time import sleep
 from .geminidriver import *
 
 from datetime import datetime
-import asyncio
+import threading
 from gtts import gTTS
-import playsound
-from pydub import AudioSegment
 
 
 class VisuAIizeApp(toga.App):
     main_box = toga.Box()
     def startup(self):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        with open(dir_path+"/resources/API_KEY.txt","r") as f:
+            api_keys = f.read().split("\n")
         key1 = os.environ["API_KEY1"]
         key2 = os.environ["API_KEY2"]
-        self.ai = VideoGemini(api_keys=[key1, key2], verbose=True, delete=False)
+        self.ai = VideoGemini(api_keys=api_keys, verbose=True, delete=False)
         main_box = toga.Box()
         button = toga.Button(
             "START MY DAY",
@@ -53,25 +52,26 @@ class VisuAIizeApp(toga.App):
         self.main_window = toga.MainWindow(title=self.formal_name)
         self.main_window.content = main_box
         self.main_window.show()
-    async def get_response_from_gemini(self, query):
+    def get_response_from_gemini(self, query):
+        print("arrived gemini")
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        response = self.ai.get_response(query, stream=True)
+        response = self.ai.get_response(query)
 
-        for chunk in response:
-            tts = gTTS(text=chunk.text, lang='en', slow=False)
+        tts = gTTS(text=response.text.replace("<None>", ""), lang='en', slow=False)
 
-            # Save the audio file
-            tts.save(dir_path + "/photos/tts.mp3")
-            # Play the audio file
-            aud_path = dir_path + "/photos/tts.mp3"
-            os.system(f"afplay -r 1.5 {aud_path}")
-    async def uploading_video(self):
+        # Save the audio file
+        tts.save(dir_path + "/photos/tts.mp3")
+        # Play the audio file
+        aud_path = dir_path + "/photos/tts.mp3"
+        os.system(f"afplay -r 1.5 {aud_path}")
+    def uploading_video(self):
+        print("arrived upload")
         dir_path = os.path.dirname(os.path.realpath(__file__))
         for i in range(10):
             ret, frame = self.cap.read()
             if not ret:
                 break
-            resize = cv2.resize(frame, (38, 66))
+            resize = cv2.resize(frame, (320, 320))
             cv2.imwrite(dir_path+"/photos/newPhoto.png", resize)
             file = File(dir_path+"/photos/newPhoto.png", (str(datetime.now()-self.starting).split(".")[0][2:]))
             self.ai.upload_frame(file)
@@ -82,15 +82,20 @@ class VisuAIizeApp(toga.App):
 
         self.cap = cv2.VideoCapture(0)
         frames_captured = 0
-        self.uploading_video()
+        
         while self.cap.isOpened():
-            task1 = asyncio.create_task(self.uploading_video())
-            task2 = asyncio.create_task(self.get_response_from_gemini())
+            if frames_captured<=15:
+                print("before first upload")
+                self.uploading_video()
+                print("after first upload")
 
-            await task1
-            await task2
-
+            task1 = threading.Thread(target=self.uploading_video, daemon=True)
+            task2 = threading.Thread(target=self.get_response_from_gemini, args=(None, ), daemon=True)
+            task1.start()
+            task2.start()
+            task1.join()
             frames_captured += 10
+
 
         # while self.cap.isOpened():
         #     ret, frame = self.cap.read()
