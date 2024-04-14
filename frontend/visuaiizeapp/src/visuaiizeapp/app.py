@@ -86,18 +86,22 @@ class VisuAIizeApp(toga.App):
         frames_captured = 0
         
         while self.cap.isOpened():
-            if frames_captured==0:
-                print("before first upload")
-                self.uploading_video()
-                print("after first upload")
+            # if frames_captured==0:
+            #     print("before first upload")
+            #     self.uploading_video()
+            #     print("after first upload")
 
-            task1 = threading.Thread(target=self.uploading_video, daemon=True)
-            task2 = threading.Thread(target=self.get_response_from_gemini, args=(None, ), daemon=True)
-            task1.start()
-            task2.start()
-            if (frames_captured != 0 and frames_captured % 20 == 0):
-                self.ai.increment_api_key()
-            task1.join()
+            # task1 = threading.Thread(target=self.uploading_video, daemon=True)
+            # task2 = threading.Thread(target=self.get_response_from_gemini, args=(None, ), daemon=True)
+            # task1.start()
+            # task2.start()
+            # # if (frames_captured != 0 and frames_captured % 20 == 0):
+            # #     self.ai.increment_api_key()
+            # task1.join()
+            # task2.join()
+            self.uploading_video()
+            query = None if frames_captured == 0 else "Was there significant changes from the last video?"
+            self.get_response_from_gemini(None)
             frames_captured += 10
 
 
