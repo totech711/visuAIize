@@ -28,10 +28,11 @@ class VideoGemini():
         genai.configure(api_key=api_keys[self.api_key_idx])
 
         self.model = genai.GenerativeModel(model_name="models/gemini-1.5-pro-latest",  system_instruction=SYSTEM_PROMPT, 
-                generation_config=genai.GenerationConfig(
-            max_output_tokens = 20,
-            temperature = 1.0
-        ))
+        #         generation_config=genai.GenerationConfig(
+        #     max_output_tokens = 100,
+        #     temperature = 1.0
+        # )
+        )
 
         self.frames = []
 

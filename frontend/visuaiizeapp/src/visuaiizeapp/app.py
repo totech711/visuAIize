@@ -25,7 +25,7 @@ class VisuAIizeApp(toga.App):
             api_keys = f.read().split("\n")
         key1 = os.environ["API_KEY1"]
         key2 = os.environ["API_KEY2"]
-        self.ai = VideoGemini(api_keys=[key1, key2], verbose=True, delete=False)
+        self.ai = VideoGemini(api_keys=api_keys, verbose=True, delete=False)
         main_box = toga.Box()
         button = toga.Button(
             "START MY DAY",
@@ -57,7 +57,7 @@ class VisuAIizeApp(toga.App):
         
         dir_path = os.path.dirname(os.path.realpath(__file__))
         response = self.ai.get_response(query)
-        print(response.candidates[0].token_count)
+        print("token count size: "+str(response.candidates[0].token_count))
         if (response and response.candidates[0].token_count != 0):
             tts = gTTS(text=response.text.replace("<None>", ""), lang='en', slow=False)
 
