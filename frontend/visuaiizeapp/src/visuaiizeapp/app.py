@@ -30,18 +30,21 @@ class VisuAIizeApp(toga.App):
        key2 = os.environ["API_KEY2"]
        self.ai = VideoGemini(api_keys=api_keys, verbose=True, delete=False)
        main_box = toga.Box()
+       my_image = toga.Image(dir_path+"/resources/logo.png")
+       main_box.add(
+         toga.ImageView(
+             my_image, style=Pack(direction=COLUMN),
+         )
+       )
        button = toga.Button(
            "START MY DAY",
            on_press=self.save_picture,
-           style=Pack(padding=5)
+           style=Pack(padding=5, color=("#8a4cfc"), direction=COLUMN)
        )
-
-
-       main_box.add(
-           toga.ImageView(
-              
-               style=Pack(flex=1, width=150),
-           )
+       end_button = toga.Button(
+           "END MY DAY",
+           on_press=self.end_day,
+           style=Pack(padding=5, color=("#8a4cfc"), direction=COLUMN)
        )
 
 
@@ -55,7 +58,7 @@ class VisuAIizeApp(toga.App):
 
        main_box.add(button)
        #main_box.add(view)
-
+       main_box.add(end_button)
 
        self.main_window = toga.MainWindow(title=self.formal_name)
        self.main_window.content = main_box
@@ -85,6 +88,8 @@ class VisuAIizeApp(toga.App):
            cv2.imwrite(dir_path+"/photos/newPhoto.png", resize)
            file = File(dir_path+"/photos/newPhoto.png", (str(datetime.now()-self.starting).split(".")[0][2:]))
            self.ai.upload_frame(file)
+   def end_day(self, widget, **kwargs):
+       sys.exit()
    async def save_picture(self, widget,**kwargs):
        self.camera.request_permission()
        dir_path = os.path.dirname(os.path.realpath(__file__))
