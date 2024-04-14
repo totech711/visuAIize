@@ -25,7 +25,7 @@ class VisuAIizeApp(toga.App):
             api_keys = f.read().split("\n")
         key1 = os.environ["API_KEY1"]
         key2 = os.environ["API_KEY2"]
-        self.ai = VideoGemini(api_keys=api_keys, verbose=True, delete=False)
+        self.ai = VideoGemini(api_keys=[key1, key2], verbose=True, delete=False)
         main_box = toga.Box()
         button = toga.Button(
             "START MY DAY",
@@ -54,16 +54,18 @@ class VisuAIizeApp(toga.App):
         self.main_window.show()
     def get_response_from_gemini(self, query):
         print("arrived gemini")
+        
         dir_path = os.path.dirname(os.path.realpath(__file__))
         response = self.ai.get_response(query)
+        print(response.candidates[0].token_count)
+        if (response and response.candidates[0].token_count != 0):
+            tts = gTTS(text=response.text.replace("<None>", ""), lang='en', slow=False)
 
-        tts = gTTS(text=response.text.replace("<None>", ""), lang='en', slow=False)
-
-        # Save the audio file
-        tts.save(dir_path + "/photos/tts.mp3")
-        # Play the audio file
-        aud_path = dir_path + "/photos/tts.mp3"
-        os.system(f"afplay -r 1.5 {aud_path}")
+            # Save the audio file
+            tts.save(dir_path + "/photos/tts.mp3")
+            # Play the audio file
+            aud_path = dir_path + "/photos/tts.mp3"
+            os.system(f"afplay -r 1.5 {aud_path}")
     def uploading_video(self):
         print("arrived upload")
         dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -84,7 +86,7 @@ class VisuAIizeApp(toga.App):
         frames_captured = 0
         
         while self.cap.isOpened():
-            if frames_captured<=15:
+            if frames_captured==0:
                 print("before first upload")
                 self.uploading_video()
                 print("after first upload")
@@ -93,6 +95,8 @@ class VisuAIizeApp(toga.App):
             task2 = threading.Thread(target=self.get_response_from_gemini, args=(None, ), daemon=True)
             task1.start()
             task2.start()
+            if (frames_captured != 0 and frames_captured % 20 == 0):
+                self.ai.increment_api_key()
             task1.join()
             frames_captured += 10
 
