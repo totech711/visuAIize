@@ -17,6 +17,8 @@ from .geminidriver import *
 from datetime import datetime
 import asyncio
 from gtts import gTTS
+import playsound
+from pydub import AudioSegment
 
 
 class VisuAIizeApp(toga.App):
@@ -69,14 +71,15 @@ class VisuAIizeApp(toga.App):
             if (frames_captured % 10 == 0):
                 query = None if frames_captured == 0 else "Did anything change significantly?"
                 response = await self.ai.async_get_response(query)
-
+                print(response)
                 tts = gTTS(text=response, lang='en', slow=False)
-   
+
                 # Save the audio file
                 tts.save(dir_path + "/photos/tts.mp3")
-
+                
                 # Play the audio file
-                os.system("start output.mp3")
+                aud_path = dir_path + "/photos/tts.mp3"
+                os.system(f"afplay {aud_path}")
                 
             #sleep(0.5)
         # d = photo.data
