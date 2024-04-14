@@ -63,8 +63,8 @@ class VisuAIizeApp(toga.App):
             ret, frame = cap.read()
             if not ret:
                 break
-            sleep(0.5)
-            cv2.imwrite(dir_path+"/photos/newPhoto.png", frame)
+            resize = cv2.resize(frame, (38, 66))
+            cv2.imwrite(dir_path+"/photos/newPhoto.png", resize)
             file = File(dir_path+"/photos/newPhoto.png", (str(datetime.now()-self.starting).split(".")[0][2:]))
             self.ai.upload_frame(file)
             frames_captured += 1
@@ -79,7 +79,7 @@ class VisuAIizeApp(toga.App):
                 
                 # Play the audio file
                 aud_path = dir_path + "/photos/tts.mp3"
-                os.system(f"afplay {aud_path}")
+                os.system(f"afplay -r 1.5 {aud_path}")
                 
             #sleep(0.5)
         # d = photo.data

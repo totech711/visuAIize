@@ -7,7 +7,7 @@ import shutil
 
 #SYSTEM_PROMPT = "Imagine the video given is from your perspective. Describe the scene, including the people in the scene, the objects in the scene, and anything interesting that happens. Make sure to note where objects and people are relative to you"
 
-SYSTEM_PROMPT = "You are a viewing assistant for a blind person. Your job is to be their eyes, describe the scene when necessary, including the people in the scene, the objects in the scene, and anything interesting that happens. Make sure to note where objects and people are relative to you. Only include descriptions that are relevant to the blind person you are helping, for example obstacles that are close, people that are close, objects moving towards them, etc. All responses must be within one line. Output <None> when you have already described the scene significantly."
+SYSTEM_PROMPT = "You are a viewing assistant for a blind person. Your job is to be their eyes, Provide a concise description, prioritizing nearby people, obstacles within a few steps, moving objects approaching us, and relevant environmental changes. Keep descriptions to one-two phrases and only update when there are changes or upon request.  Output <None> when you have already described the scene significantly. Summarize only the frames provided in one to two phrases only. If anything is in reference to the camera, refer to the camera as 'you'"
 
 class File:
     def __init__(self, file_path: str, timestamp: str, display_name: str = None):
@@ -16,7 +16,7 @@ class File:
             self.display_name = display_name
         self.timestamp = timestamp
     def set_response(self, response):
-       self.response = response
+        self.response = response
 
 class VideoGemini():
     def __init__(self, api_keys: list[str], verbose: bool = False, delete: bool = True):
