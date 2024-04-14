@@ -30,7 +30,7 @@ class VisuAIizeApp(toga.App):
         main_box = toga.Box()
         button = toga.Button(
             "START MY DAY",
-            on_press=self.save_picture,
+            on_press=asyncio.run(self.save_picture),
             style=Pack(padding=5)
         )
 
@@ -52,6 +52,19 @@ class VisuAIizeApp(toga.App):
         self.main_window = toga.MainWindow(title=self.formal_name)
         self.main_window.content = main_box
         self.main_window.show()
+    async def get_response_from_gemini(self, query):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        response = self.ai.get_response(query, stream=True)
+
+        for chunk in response:
+            tts = gTTS(text=chunk.text, lang='en', slow=False)
+
+            # Save the audio file
+            tts.save(dir_path + "/photos/tts.mp3")
+            # Play the audio file
+            aud_path = dir_path + "/photos/tts.mp3"
+            os.system(f"afplay -r 1.5 {aud_path}")
+        
     async def save_picture(self, widget,**kwargs):
         self.camera.request_permission()
         dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -70,16 +83,7 @@ class VisuAIizeApp(toga.App):
             frames_captured += 1
             if (frames_captured % 10 == 0):
                 query = None if frames_captured == 0 else "Did anything change significantly?"
-                response = await self.ai.async_get_response(query)
-                print(response)
-                tts = gTTS(text=response, lang='en', slow=False)
-
-                # Save the audio file
-                tts.save(dir_path + "/photos/tts.mp3")
-                
-                # Play the audio file
-                aud_path = dir_path + "/photos/tts.mp3"
-                os.system(f"afplay -r 1.5 {aud_path}")
+                task = asyncio.create_task(self.get_response_from_gemini(query))
                 
             #sleep(0.5)
         # d = photo.data
