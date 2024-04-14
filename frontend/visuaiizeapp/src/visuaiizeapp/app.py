@@ -30,7 +30,7 @@ class VisuAIizeApp(toga.App):
         main_box = toga.Box()
         button = toga.Button(
             "START MY DAY",
-            on_press=asyncio.run(self.save_picture),
+            on_press=self.save_picture,
             style=Pack(padding=5)
         )
 
@@ -42,6 +42,7 @@ class VisuAIizeApp(toga.App):
         )
 
         self.starting = datetime.now()
+        self.cap = None
 
         #my_image = toga.Image("filename.png")
         #view = toga.ImageView(my_image)
@@ -64,26 +65,45 @@ class VisuAIizeApp(toga.App):
             # Play the audio file
             aud_path = dir_path + "/photos/tts.mp3"
             os.system(f"afplay -r 1.5 {aud_path}")
-        
-    async def save_picture(self, widget,**kwargs):
-        self.camera.request_permission()
+    async def uploading_video(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-
-
-        cap = cv2.VideoCapture(0)
-        frames_captured = 0
-        while cap.isOpened():
-            ret, frame = cap.read()
+        for i in range(10):
+            ret, frame = self.cap.read()
             if not ret:
                 break
             resize = cv2.resize(frame, (38, 66))
             cv2.imwrite(dir_path+"/photos/newPhoto.png", resize)
             file = File(dir_path+"/photos/newPhoto.png", (str(datetime.now()-self.starting).split(".")[0][2:]))
             self.ai.upload_frame(file)
-            frames_captured += 1
-            if (frames_captured % 10 == 0):
-                query = None if frames_captured == 0 else "Did anything change significantly?"
-                task = asyncio.create_task(self.get_response_from_gemini(query))
+    async def save_picture(self, widget,**kwargs):
+        self.camera.request_permission()
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+
+
+        self.cap = cv2.VideoCapture(0)
+        frames_captured = 0
+        self.uploading_video()
+        while self.cap.isOpened():
+            task1 = asyncio.create_task(self.uploading_video())
+            task2 = asyncio.create_task(self.get_response_from_gemini())
+
+            await task1
+            await task2
+
+            frames_captured += 10
+
+        # while self.cap.isOpened():
+        #     ret, frame = self.cap.read()
+        #     if not ret:
+        #         break
+        #     resize = cv2.resize(frame, (38, 66))
+        #     cv2.imwrite(dir_path+"/photos/newPhoto.png", resize)
+        #     file = File(dir_path+"/photos/newPhoto.png", (str(datetime.now()-self.starting).split(".")[0][2:]))
+        #     self.ai.upload_frame(file)
+        #     frames_captured += 1
+        #     if (frames_captured % 10 == 0):
+        #         query = None if frames_captured == 0 else "Did anything change significantly?"
+        #         task = asyncio.create_task(self.get_response_from_gemini(query))
                 
             #sleep(0.5)
         # d = photo.data
