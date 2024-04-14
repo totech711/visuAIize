@@ -3,6 +3,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.http import StreamingHttpResponse
 from django.views.decorators import gzip
+import threading
 import cv2
 import os
 
@@ -16,8 +17,10 @@ class VideoCamera(object):
         self.video.release()
 
     def get_frame(self):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
         image = self.frame
         _, jpeg = cv2.imencode('.jpg', image)
+        cv2.imwrite(dir_path+"/newPhoto.png", image)
         return jpeg.tobytes()
 
     def update(self):
@@ -33,7 +36,7 @@ def gen(camera):
 
 
 @gzip.gzip_page
-def livefe(request):
+def index(request):
     try:
         cam = VideoCamera()
         return StreamingHttpResponse(gen(cam), content_type="multipart/x-mixed-replace;boundary=frame")
